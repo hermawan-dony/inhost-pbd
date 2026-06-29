@@ -40,14 +40,17 @@ exit /b
 set FILENAME=%~1
 echo  --^> Memeriksa [ %FILENAME% ] ...
 
-rem Mengecek apakah file etag lokal ada, lalu download secara kondisional
+set HTTP_STATUS=
 if exist "%FILENAME%.etag" (
-    curl.exe -# --etag-compare "%FILENAME%.etag" --etag-save "%FILENAME%.etag" -L -O "%GITHUB_RAW%/%FILENAME%"
-) else (
-    curl.exe -# --etag-save "%FILENAME%.etag" -L -O "%GITHUB_RAW%/%FILENAME%"
+    for /f "tokens=2" %%A in ('curl.exe -s -I --etag-compare "%FILENAME%.etag" -L "%GITHUB_RAW%/%FILENAME%" ^| findstr "HTTP/"') do set HTTP_STATUS=%%A
 )
 
-if %errorlevel% neq 0 (
-    echo      [x] Gagal mendownload %FILENAME%. Silakan cek koneksi internet!
+if "%HTTP_STATUS%"=="304" (
+    echo      -^> Sudah Up to Date
+) else (
+    curl.exe -# --etag-save "%FILENAME%.etag" -L -O "%GITHUB_RAW%/%FILENAME%"
+    if %errorlevel% neq 0 (
+        echo      [x] Gagal mendownload %FILENAME%. Silakan cek koneksi internet!
+    )
 )
 exit /b
