@@ -14,6 +14,12 @@ echo     [ Client Auto-Updater System ]
 echo  ======================================================
 echo.
 
+echo  --^> Menutup aplikasi yang berjalan agar update aman...
+for %%F in ("%~dp0*.exe") do (
+    taskkill /IM "%%~nxF" /F >nul 2>&1
+)
+echo.
+
 set GITHUB_RAW=https://raw.githubusercontent.com/hermawan-dony/inhost-pbd/main
 
 call :DownloadFile "bcapp.pbd"
