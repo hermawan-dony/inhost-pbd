@@ -10,7 +10,6 @@ Repository ini khusus didedikasikan untuk menyimpan dan mendistribusikan *compil
 
 - `bcapp.pbd` - Library utama sistem
 - `ceisa.pbd` - Library modul CEISA
-- `custom.pbd` - Library modul kustom
 - `Inhost-Updater.bat` - **Script Auto-Updater untuk Klien**
 
 ---
