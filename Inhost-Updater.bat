@@ -1,25 +1,39 @@
 @echo off
-color 0B
+color 0A
+title Inhost Auto Updater
+
 echo ==========================================
-echo  Inhost Client Updater 
+echo  Inhost Client Updater
 echo ==========================================
 echo.
 
 set GITHUB_RAW=https://raw.githubusercontent.com/hermawan-dony/inhost-pbd/main
 
-echo [Mendownload] bcapp.pbd ...
-curl -L -O -# %GITHUB_RAW%/bcapp.pbd
-
+call :DownloadFile bcapp.pbd
 echo.
-echo [Mendownload] custom.pbd ...
-curl -L -O -# %GITHUB_RAW%/custom.pbd
-
+call :DownloadFile custom.pbd
 echo.
-echo [Mendownload] ceisa.pbd ...
-curl -L -O -# %GITHUB_RAW%/ceisa.pbd
-
+call :DownloadFile ceisa.pbd
 echo.
+
 echo ==========================================
-echo Semua file PBD telah berhasil diperbarui!
+echo Update Selesai! Semua file siap digunakan.
 echo ==========================================
- 
+pause
+exit /b
+
+:DownloadFile
+set FILENAME=%1
+echo [Cek Update] %FILENAME% ...
+
+rem Mengecek apakah file etag lokal ada, lalu download secara kondisional
+if exist "%FILENAME%.etag" (
+    curl.exe -# --etag-compare "%FILENAME%.etag" --etag-save "%FILENAME%.etag" -L -O "%GITHUB_RAW%/%FILENAME%"
+) else (
+    curl.exe -# --etag-save "%FILENAME%.etag" -L -O "%GITHUB_RAW%/%FILENAME%"
+)
+
+if %errorlevel% neq 0 (
+    echo [Gagal] Terjadi kesalahan saat memeriksa/mendownload %FILENAME%.
+)
+exit /b
